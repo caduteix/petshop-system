@@ -1,0 +1,8 @@
+Carlos Eduardo Teixeira Alves - 569531: 
+Criação do repositório Git, Estruturação do Ambiente Python e Desenvolvimento da API;
+
+Rafael Santos Silva - 567786: 
+Criação das Entidades e Desenvolvimento da API;
+
+Geraldo Oliveira Pinho - 565382: 
+Criação do Database e Configuração do FakerJS;

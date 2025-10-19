@@ -6,7 +6,7 @@ from app.services.pet_service import PetService
 
 app = FastAPI(
     title="PetShop System",
-    description="API REST para gerenciamento de Pets com persistência em CSV.",
+    description="API REST para gerenciamento de um PetShop com persistência em CSV.",
 )
 
 
