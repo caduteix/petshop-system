@@ -3,9 +3,12 @@ import os
 from typing import Dict, List, Optional
 from .sequencer import Sequencia
 
+
 class MiniDB:
     def __init__(self, nome_arquivo: str, campos: List[str]):
-        self.arquivo = nome_arquivo if nome_arquivo.endswith(".csv") else f"{nome_arquivo}.csv"
+        self.arquivo = (
+            nome_arquivo if nome_arquivo.endswith(".csv") else f"{nome_arquivo}.csv"
+        )
         self.seq = Sequencia(nome_arquivo)
         self.campos = campos
 
@@ -13,15 +16,16 @@ class MiniDB:
             with open(self.arquivo, "w", newline="", encoding="utf-8") as f:
                 writer = csv.DictWriter(f, fieldnames=self.campos)
                 writer.writeheader()
-    
+
     def insert(self, dados: Dict) -> int:
         dados["id"] = self.seq.next_id()
-        dados["deleted"] = False
+        # padronizar como string (evita tipo misto)
+        dados["deleted"] = "False"
 
         with open(self.arquivo, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=self.campos)
             writer.writerow(dados)
-        
+
         return dados["id"]
 
     def get(self, id_: int) -> Optional[Dict]:
@@ -31,20 +35,25 @@ class MiniDB:
                 if int(line["id"]) == id_ and line["deleted"] == "False":
                     return line
         return None
-    
+
     def update(self, id_: int, novos_dados: Dict) -> bool:
         atualizado = False
         temp = self.arquivo + ".tmp"
 
-        with open(self.arquivo, "r", newline="", encoding="utf-8") as entrada, \
-             open(temp, "w", newline="", encoding="utf-8") as saida:
+        with (
+            open(self.arquivo, "r", newline="", encoding="utf-8") as entrada,
+            open(temp, "w", newline="", encoding="utf-8") as saida,
+        ):
             reader = csv.DictReader(entrada)
             writer = csv.DictWriter(saida, fieldnames=self.campos)
             writer.writeheader()
 
             for linha in reader:
                 if int(linha["id"]) == id_ and linha["deleted"] == "False":
-                    linha.update(novos_dados)
+                    # atualiza apenas campos válidos
+                    for k, v in novos_dados.items():
+                        if k in self.campos and k not in ["id", "deleted"]:
+                            linha[k] = v
                     atualizado = True
                 writer.writerow(linha)
 
@@ -55,21 +64,22 @@ class MiniDB:
         deletado = False
         temp = self.arquivo + ".tmp"
 
-        with open(self.arquivo, "r", newline="", encoding="utf-8") as entrada, \
-             open(temp, "w", newline="", encoding="utf-8") as saida:
+        with (
+            open(self.arquivo, "r", newline="", encoding="utf-8") as entrada,
+            open(temp, "w", newline="", encoding="utf-8") as saida,
+        ):
             reader = csv.DictReader(entrada)
             writer = csv.DictWriter(saida, fieldnames=self.campos)
             writer.writeheader()
 
             for linha in reader:
                 if int(linha["id"]) == id_ and linha["deleted"] == "False":
-                    linha["deleted"] = True
+                    linha["deleted"] = "True"
                     deletado = True
                 writer.writerow(linha)
 
         os.replace(temp, self.arquivo)
         return deletado
-
 
     def count(self) -> int:
         total = 0
@@ -83,8 +93,10 @@ class MiniDB:
     def vacuum(self):
         temp = self.arquivo + ".vacuum"
 
-        with open(self.arquivo, "r", newline="", encoding="utf-8") as entrada, \
-             open(temp, "w", newline="", encoding="utf-8") as saida:
+        with (
+            open(self.arquivo, "r", newline="", encoding="utf-8") as entrada,
+            open(temp, "w", newline="", encoding="utf-8") as saida,
+        ):
             reader = csv.DictReader(entrada)
             writer = csv.DictWriter(saida, fieldnames=self.campos)
             writer.writeheader()

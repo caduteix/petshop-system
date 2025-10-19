@@ -1,20 +1,18 @@
 from faker import Faker
 from app.database.mini_db import MiniDB
 from datetime import date
-
 import random
 
 fake = Faker("pt_BR")
 
 CAMPOS = ["id", "nome", "especie", "raca", "data_nascimento", "id_dono", "deleted"]
-
 db = MiniDB("pets", CAMPOS)
 
 species_breeds = {
     "Cachorro": ["Poodle", "Labrador", "Bulldog", "Pastor Alemão", "Vira-lata"],
     "Gato": ["Siamês", "Persa", "Maine Coon", "Angorá", "SRD"],
     "Pássaro": ["Calopsita", "Canário", "Papagaio", "Periquito"],
-    "Coelho": ["Mini Rex", "Lion Head", "Holland Lop", "Angorá Inglês"]
+    "Coelho": ["Mini Rex", "Lion Head", "Holland Lop", "Angorá Inglês"],
 }
 
 for _ in range(1000):
