@@ -19,6 +19,14 @@ class PetUpdate(BaseModel):
     id_dono: Optional[str] = None
     deleted: Optional[bool] = False
     
+class PetPatch(BaseModel):
+    nome: Optional[str] = None
+    especie: Optional[str] = None
+    raca: Optional[str] = None
+    data_nascimento: Optional[date] = None
+    id_dono: Optional[str] = None
+    deleted: Optional[bool] = False
+    
 class HashRequest(BaseModel):
     dado: str
     algoritmo: str = Field(..., example="MD5")

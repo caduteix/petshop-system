@@ -7,7 +7,7 @@ import hashlib
 from fastapi.responses import StreamingResponse
 
 from app.database.mini_db import MiniDB
-from app.entities.models import Pet
+from app.entities.models import Pet, PetPatch
 
 CAMPOS = ["id", "nome", "especie", "raca", "data_nascimento", "id_dono", "deleted"]
 db = MiniDB("pets", CAMPOS)
@@ -63,6 +63,29 @@ class PetService:
         )
         pet_atualizado["deleted"] = pet_atualizado["deleted"] == "True"
         return Pet(**pet_atualizado)
+
+    @staticmethod
+    def atualizar_pet_parcial(id_: int, campos: PetPatch) -> Optional[Pet]:
+        dados_atualizar = campos.dict(exclude_unset=True)
+
+        if not dados_atualizar:
+            return None  # Nenhum campo informado
+
+        atualizado = db.update(id_, dados_atualizar)
+        if not atualizado:
+            return None
+
+        # Retorna o objeto atualizado
+        pet_atualizado = db.get(id_)
+        if pet_atualizado:
+            pet_atualizado["id"] = int(pet_atualizado["id"])
+            pet_atualizado["data_nascimento"] = date.fromisoformat(
+                pet_atualizado["data_nascimento"]
+            )
+            pet_atualizado["deleted"] = pet_atualizado["deleted"] == "True"
+            return Pet(**pet_atualizado)
+
+        return None
 
     @staticmethod
     def deletar_pet(id_: int) -> bool:

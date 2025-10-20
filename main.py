@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
 
-from app.entities.models import Pet, PetUpdate, HashRequest
+from app.entities.models import Pet, PetPatch, PetUpdate, HashRequest
 from app.services.pet_service import PetService
 
 app = FastAPI(
@@ -94,6 +94,18 @@ def atualizar_pet(pet_id: int, novos_dados: PetUpdate):
     if not pet_atualizado:
         raise HTTPException(
             status_code=404, detail="Pet não encontrado para atualização"
+        )
+    return pet_atualizado
+
+
+# Atualizar um campo em específico
+@app.patch("/pets/{pet_id}", response_model=Pet, tags=["Pets"])
+def atualizar_pet_parcial(pet_id: int, campos: PetPatch):
+    pet_atualizado = PetService.atualizar_pet_parcial(pet_id, campos)
+    if not pet_atualizado:
+        raise HTTPException(
+            status_code=404,
+            detail="Pet não encontrado ou nenhum campo válido informado.",
         )
     return pet_atualizado
 
