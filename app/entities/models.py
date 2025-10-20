@@ -12,12 +12,12 @@ class Pet(BaseModel):
     deleted: Optional[bool] = False ## Deleção lógica (Soft Delete)
     
 class PetUpdate(BaseModel):
-    nome: Optional[str] = None
-    especie: Optional[str] = None
-    raca: Optional[str] = None
-    data_nascimento: Optional[date] = None
-    id_dono: Optional[str] = None
-    deleted: Optional[bool] = False
+    nome: str
+    especie: str
+    raca: str
+    data_nascimento: date
+    id_dono: str
+    deleted: bool 
     
 class PetPatch(BaseModel):
     nome: Optional[str] = None
@@ -25,7 +25,7 @@ class PetPatch(BaseModel):
     raca: Optional[str] = None
     data_nascimento: Optional[date] = None
     id_dono: Optional[str] = None
-    deleted: Optional[bool] = False
+    deleted: Optional[bool] = False 
     
 class HashRequest(BaseModel):
     dado: str
